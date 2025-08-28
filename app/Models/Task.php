@@ -9,7 +9,7 @@ class Task extends Model
 {
     use SoftDeletes;
     protected $fillable = ['title', 'description', 'assignee_id', 'status', 'priority', 'due_date'];
-    // protected $table = 'tasks';
+    
     public function assignee()
     {
         return $this->belongsTo(User::class, 'assignee_id');
