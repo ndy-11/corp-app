@@ -37,11 +37,13 @@ class MeetingController extends Controller
         });
         return redirect()->route('meetings.show', $meeting)->with('success', 'Meeting created');
     }
+
     public function show(Meeting $meeting)
     {
         $meeting->load('organizer:id,name', 'participants:id,name');
         return view('meetings.show', compact('meeting'));
     }
+
     public function edit(Meeting $meeting)
     {
         $users = User::orderBy('name')->get(['id', 'name']);
@@ -60,5 +62,20 @@ class MeetingController extends Controller
     {
         $meeting->delete();
         return redirect()->route('meetings.index')->with('success', 'Meeting deleted');
+    }
+
+    public function rsvp(Request $req, Meeting $meeting)
+    {
+        $req->validate(['response' => 'required|in:accepted,declined']);
+        $meeting->participants()->updateExistingPivot($req->user()->id, ['response' => $req->response]);
+        return redirect()->route('meetings.show', $meeting)->with('success', 'RSVP updated');
+    }
+    public function myMeetings(Request $req)
+    {
+        $q = $req->user()->meetings()->with('organizer:id,name');
+        if ($req->from) $q->where('start_time', '>=', $req->from);
+        if ($req->to) $q->where('end_time', '<=', $req->to);
+        $meetings = $q->orderBy('start_time', 'desc')->paginate(10)->withQueryString();
+        return view('meetings.my_meetings', compact('meetings'));
     }
 }
