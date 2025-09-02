@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Http\Requests\TaskRequest;
 use Illuminate\Http\Request;
 
-
 class TaskController extends Controller
 {
     public function index(Request $req)
