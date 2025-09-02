@@ -48,4 +48,16 @@ class TaskController extends Controller
         $task->delete();
         return redirect()->route('tasks.index')->with('success', 'Task deleted');
     }
+    public function changeStatus(Request $req, Task $task)
+    {
+        $req->validate(['status' => 'required|in:pending,in_progress,completed']);
+        $task->update(['status' => $req->status]);
+        return redirect()->route('tasks.show', $task)->with('success', 'Task status updated');
+    }
+    public function changePriority(Request $req, Task $task)
+    {
+        $req->validate(['priority' => 'required|in:low,medium,high']);
+        $task->update(['priority' => $req->priority]);
+        return redirect()->route('tasks.show', $task)->with('success', 'Task priority updated');
+    }
 }
